@@ -1,0 +1,22 @@
+<!DOCTYPE RCC>
+<!-- Manually run Qt resource compiler
+    $(QTDIR)\bin\rcc.exe -name resources resources.qrc -o qrc_resources.cpp
+    
+    Then manually add qrc_resources.cpp to VC ptoject. 
+    
+    Add this file to the project for maintenance. -->
+<RCC version="1.0">
+  <qresource>
+      <file>icons/fittowindow.png</file>
+      <file>icons/fittowindowonclick.png</file>
+      <file>icons/rhizovisionanalyzer.png</file>
+      <file>icons/rhizovisionimager.png</file>
+      <file>icons/rvanalyzernew.png</file>
+      <file>icons/rvimagernew.png</file>
+      <file>icons/rhizovisionlogo.png</file>
+      <file>icons/zoomin.png</file>
+      <file>icons/zoominonclick.png</file>
+      <file>icons/zoomout.png</file>
+      <file>icons/zoomoutonclick.png</file>
+  </qresource>
+</RCC>
