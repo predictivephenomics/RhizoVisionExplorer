@@ -37,17 +37,15 @@ Copyright (C) 2018-2019 Noble Research Institute, LLC
 **RhizoVision Analyzer**
 
 RhizoVision Analyzer is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+it under the terms of the NOBLE RESEARCH INSTITUTE, GENERAL PUBLIC LICENSE.
 
 RhizoVision Analyzer is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+NOBLE RESEARCH INSTITUTE GENERAL PUBLIC LICENSE for more details.
 
-You should have received a copy of the GNU General Public License
-along with RhizoVision Analyzer.  If not, see <https://www.gnu.org/licenses/>.
+You should have received a copy of the Noble Research Institute General Public License
+along with RhizoVision Analyzer.  If not, see <https://github.com/noble-research-institute/RhizoVisionAnalyzer/blob/master/LICENSE>.
 
 #### Citing
 Please use the following citation when using the software.
@@ -66,8 +64,7 @@ Root Phenomics Lab,
 Noble Research Institute, LLC  
 
 email:  
-aseethepalli@noble.org  
-anand_seethepalli@yahoo.co.in  
+aseethepalli@noble.org or anand_seethepalli@yahoo.co.in  
 
 Larry York,  
 Principal Investigator  
