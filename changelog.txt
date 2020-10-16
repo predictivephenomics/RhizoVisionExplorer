@@ -1,27 +1,135 @@
-Version 0.1
------------
-* Initial creation.
-* The program runs in console window and extracts plant root features from each image in a specified directory.
+version 2.0.2
+-------------
+New features:
+* The application is renamed to RhizoVision Explorer to reflect the huge revamp
+  in the UI. The UI is expanded from only a batch processer for directories of 
+  images to a fully interactive tool. The application consists of a main window
+  consisting of menus, toolbar and several panes such as analysis options, 
+  features, log, and ROI Manager. This functionality provided by cvutil library
+  contains the following features.
+  1.  Supports drag & drop of images to load.
+  2.  Supports image panning and zooming.
+  3.  Allows user to inspect pixel values in five different color spaces
+      such as RGB, HSV, HLS, Lab and Luv.
+  4.  Supports drawing Region-of-Interest (ROI) rectangles on the image
+      to highlight important portions.
+  5.  User can query pixel statistics of a loaded image in five different
+      color spaces (mentioned above), either on an entire image, or the
+      locations specified by ROIs. The statistics include mean and SD of
+      the color channels.
+  6.  The ROI subsystem supports selecting, moving, resizing and deleting
+      multiple ROIs. Deleting the ROIs can be done using the delete key.
+      Ctrl+A selects all the ROIs. All the ROIs can be deleted from the 
+      menu using Edit->ROI->Clear all ROIs.
+  7.  The ROI subsystem also supports exporting and importing the ROIs as
+      annotations in a text file.
+  8.  The ROI Manager pane to the right of the main Window shows the ROIs
+      that are currently present on the image. Selecting an ROI shows its 
+      dimensions, which can be edited in the pane.
+  9.  The main window supports plugin system. When a plugin is loaded, its
+      settings are populated to the left of the main window. Plugins are
+      independent modules that implement a specific procedure/method/algorithm
+      that can be attached to and configured frim inside the main window.
+  10. Main window supports browsing images in the same folder using left 
+      and right arrow keys.
+  11. Supports "Analyze" button in the toolbar, that invokes the current 
+      plugin loaded to perform analysis on the loaded image.
+  12. The main window has a log pane for logging info/warning/error messages
+      and a features pane to display any extracted features from the plugin.
+      Both the panes are located at the bottom of the main window.
+  13. The main window supports color inversion and 90 degree rotation of
+      a loaded image.
+  14. If the current plugin has multiple outputs, these outputs can be 
+      browsed from the toolbar of the main window or by pressing SPACE key.
+      SPACE key toggles the image displayed between input image and multiple
+      output images.
+* The RhizoVision Explorer supports feature extraction from both root crown and
+  broken root images that were acquired using flatbed scanner using Whole root 
+  and Brokwn root modes respectively.
+* The analysis options pane includes options for image pre-processing, feature 
+  extraction and output display.
+* The program can now convert pixels from mm using DPI value.
+* The program assumes the roots are darker and the background is brighter.
+  Noise can be filtered by keeping largest connected component, filtering 
+  smaller dark components by size (non-roots) or filtering brighter components
+  on dark components by size (fill roots).
+* Edge smoothing is now optional.
+* Feature extraction options include root pruning. Root pruning is a method 
+  where the lateral roots with root tips whose length is within the root diameter
+  at the connecting branch plus the number of pixels given by the user.
+* Feature extraction options also include setting diameter ranges. A maximum 
+  of 10 ranges can be set.
+* User can configure how an output image can be displayed using output display
+  options. This can be done using output display options.
+* After analysis the relevant features from either whole root or broken roots
+  are extracted and populated in the Features pane at the bottom of the main 
+  window.
+* A histogram pane shows after running analysis that shows the total length in 
+  each diameter bin and updates with new analysis
+* Help has an About dialog with information about the version, license, and 
+  contact information.
+* The program now extracts histograms of root length, projected area, surface
+  area and volume with bins as the diameter ranges given by the user in the
+  Analysis options pane.
+* While extracting features of an image in interactive mode, a prograss bar
+  shows the amount of progress and the steps currently running on the image.
+* If the images are taken in a different rotation, they can be rotated and 
+  analyzed within the program.
+* If Region-of-Interests (ROIs) are drawn on an image, the program only analyzes
+  the image data in the ROIs. This may be helpful, when cropping borders or
+  if an image has multiple root samples that require separate processing.
+  The batch analysis also applies the existing ROIs to every image in the 
+  folder before analyzing.
+* The program now supports root pruning. Enabling the pruning option with 
+  a threshold level discards root segments greater than the radius of the 
+  parent segment plus the threshold level.
 
-Version 0.9
+Fixes:
+* main.cpp: Fixed type casting variables from unsigned int to signed int.
+* MainUI.cpp: Fixed loading/saving image paths to use QFile instead of fstream
+  to fix errors when the path has non-English characters.
+
+Version 1.0:
 -----------
 New features:
 ------------
-* The program is converted to a GUI. The feature extraction runs on a separate thread, while progress is shown
-  on main window.
-* The user can specify in the window, the location of the images to be processed and the output location.
-* The program can optionally output processed images.
-* The program can optionally convert features from pixel units to physical units (millimeters).
-* An additional feature 'Average Hole Size' is extracted from the plant root images.
+* Modified feature extraction function to extract features in two separate threads.
+* Calculated area of convex polygon without drawing the pixels in a separate image.
+* Added About dialog box.
+* Added in-program documentation. It can be accessed by clicking '?' symbol at the 
+  top right corner and clicking the user interface controls.
+* Added support for file types: PNG, JPG, BMP, JPEG, JPE, DIB, JP2, TIFF, TIF.
+* The program now saves the user options in a separate metadata.csv in the same 
+  output folder along with features.csv for future reference.
+* Added icons and logo to the software.
 
 Issues fixed:
 ------------
-* demo.h:getnearestcomponents() - Fixed an issue where nearest components were wrogly assigned.
-* main.cpp:getcoarsefineroots() - The coarse, medium and fine roots are returned as fraction of the total number of roots.
-* main.cpp:getshallowdeeproots() - The shallow, medium and deep roots are returned as fraction of the total number of roots.
-* main.cpp:feature_extractor() - Fixed the function to convert features from pixel units to physical units (millimeters).
-* roottopology.cpp:getroottolopogy() - Fixed a memory leak issue, that leads to large memory allocation of the order of 9 GB
-  when the program is run on 4000 images.
+* Replaced conventional rand() function from C to random_device in C++ for longer 
+  periodicity.
+* Fixed program to crop empty regions before performing analysis to improve speed.
+* Before extracting median and maximum root numbers, the program now skips zeros 
+  from the list of root numbers from each rows.
+* Fixed estimation of Perimeter, where the program computed the sum of distances 
+  between contour points excluding the segment that connects first and last contour 
+  points in a circular contour.
+* Average and median diameter is now zero for an empty image where the program 
+  previously crashed for the input.
+* Fixed estimation of volume and surface area of plant root so that the extracted 
+  feature is invariant to rotation of image. This issue was observed when an image 
+  was created containing manually drawn straight line of same length but at different 
+  angles was passed to RhizoVision Analyzer.
+* The program now saves root diameters (average, median and maximum) instead of 
+  radii for easier verification by end users.
+* Fixed generation of orientation histograms as the program iterates only a few 
+  points due to wrong loop condition.
+* Fixed generation of orientation histograms where the program crashed when the 
+  root segment has only one pixel.
+* The program is fixed to check the availability of Intel AVX 2.0 instruction set 
+  and enable vector acceleration accordingly.
+* Fixed estimation of maximum diameter to scan all skeletal pixels and select the 
+  location of the pixel having maximum diameter that has highest row index (or 
+  greatest depth).
 
 Version 0.91
 ------------
@@ -35,40 +143,42 @@ New features:
 Issues fixed:
 ------------
 * Fixed issues where ghost skeletons are created.
-* Fixed issue in skeletonization where the ridges were not connected to the main ridge due to mis-identification of ridge endpoints.
-* The distanceTransform() on OpenCV returns wrong distances (for precise Euclidean distances) for pixels with location greater than 
-  4096 rows or columns. This may make harder to compute distance transforms for larger sized images. Although OpenCV is open-source, 
-  it internally calls functions from Intel's proprietary library called Intel Performance Premitives (IPP) to compute the precise 
-  Euclidean distance transforms. Currently implemented the same algorithm as referred in IPP manually.
+* Fixed issue in skeletonization where the ridges were not connected to the main ridge 
+  due to mis-identification of ridge endpoints.
+* The distanceTransform() on OpenCV returns wrong distances (for precise Euclidean 
+  distances) for pixels with location greater than 4096 rows or columns. This may 
+  make harder to compute distance transforms for larger sized images. Although 
+  OpenCV is open-source, it internally calls functions from Intel's proprietary 
+  library called Intel Performance Premitives (IPP) to compute the precise Euclidean 
+  distance transforms. Currently implemented the same algorithm as referred in IPP 
+  manually.
 
-Version 1.0:
+Version 0.9
 -----------
 New features:
 ------------
-* Modified feature extraction function to extract features in two separate threads.
-* Calculated area of convex polygon without drawing the pixels in a separate image.
-* Added About dialog box.
-* Added in-program documentation. It can be accessed by clicking '?' symbol at the top right corner and clicking the user interface 
-  controls.
-* Added support for file types: PNG, JPG, BMP, JPEG, JPE, DIB, JP2, TIFF, TIF.
-* The program now saves the user options in a separate metadata.csv in the same output folder along with features.csv for future
-  reference.
-* Added icons and logo to the software.
+* The program is converted to a GUI. The feature extraction runs on a separate thread, 
+  while progress is shown on main window.
+* The user can specify in the window, the location of the images to be processed and 
+  the output location.
+* The program can optionally output processed images.
+* The program can optionally convert features from pixel units to physical units (millimeters).
+* An additional feature 'Average Hole Size' is extracted from the plant root images.
 
 Issues fixed:
 ------------
-* Replaced conventional rand() function from C to random_device in C++ for longer periodicity.
-* Fixed program to crop empty regions before performing analysis to improve speed.
-* Before extracting median and maximum root numbers, the program now skips zeros from the list of root numbers from each rows.
-* Fixed estimation of Perimeter, where the program computed the sum of distances between contour points excluding the segment 
-  that connects first and last contour points in a circular contour.
-* Average and median diameter is now zero for an empty image where the program previously crashed for the input.
-* Fixed estimation of volume and surface area of plant root so that the extracted feature is invariant to rotation of image.
-  (This issue was observed when an image was created containing manually drawn straight line of same length but at different angles
-  was passed to RhizoVision Analyzer.)
-* The program now saves root diameters (average, median and maximum) instead of radii for easier verification by end users.
-* Fixed generation of orientation histograms as the program iterates only a few points due to wrong loop condition.
-* Fixed generation of orientation histograms where the program crashed when the root segment has only one pixel.
-* The program is fixed to check the availability of Intel AVX 2.0 instruction set and enable vector acceleration accordingly.
-* Fixed estimation of maximum diameter to scan all skeletal pixels and select the location of the pixel having maximum diameter that
-  has highest row index (or greatest depth).
+* demo.h:getnearestcomponents() - Fixed an issue where nearest components were wrongly 
+  assigned.
+* main.cpp:getcoarsefineroots() - The coarse, medium and fine roots are returned as 
+  fraction of the total number of roots.
+* main.cpp:getshallowdeeproots() - The shallow, medium and deep roots are returned as 
+  fraction of the total number of roots.
+* main.cpp:feature_extractor() - Fixed the function to convert features from pixel units 
+  to physical units (millimeters).
+* roottopology.cpp:getroottolopogy() - Fixed a memory leak issue, that leads to large 
+  memory allocation of the order of 9 GB when the program is run on 4000 images.
+
+Version 0.1
+-----------
+* Initial creation.
+* The program runs in console window and extracts plant root features from each image in a specified directory.

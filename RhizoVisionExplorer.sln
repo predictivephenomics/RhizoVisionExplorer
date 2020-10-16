@@ -3,7 +3,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RhizoVisionAnalyzer", "RhizoVisionAnalyzer\RhizoVisionAnalyzer.vcxproj", "{868F0440-8F50-4AAC-AEF2-C9A0AEB2635E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RhizoVisionExplorer", "RhizoVisionExplorer\RhizoVisionExplorer.vcxproj", "{868F0440-8F50-4AAC-AEF2-C9A0AEB2635E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A147851C-C2B1-4F81-8DF1-71F4D8841EA4}"
+	ProjectSection(SolutionItems) = preProject
+		changelog.txt = changelog.txt
+		LICENSE = LICENSE
+		README.md = README.md
+		RhizoVisionExplorer-window.png = RhizoVisionExplorer-window.png
+		RVElogoclearback-150.png = RVElogoclearback-150.png
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
