@@ -1,11 +1,13 @@
 # ![RhiZoVision Explorer Logo](./RVElogoclearback-80.png) RhizoVision Explorer
 
+Note! The copyright of RhizoVision Explorer has transferred from Noble Research Institute, LLC to the developers Larry York and Anand Seethepalli effective June 29, 2021. These pages, licenses, and code will be updated shortly to reflect this change. 
+
 RhizoVision Explorer is free and open-source software developed for estimating root traits from images acquired from a flatbed scanner or camera. Root images are expected to have a high contrast of roots with the background, homogenous lighting, and minimal overlapping of roots. The software is built in C++ for speed and stability, using QT for the graphical user interface and OpenCV for image processing. Traits extracted by RhizoVision Explorer have been extensively validated using a physical copper wire ground truth image set, thousands of simulated roots, and comparisons with other image analysis software. The default “Broken Roots” mode is meant for roots washed out from soil cores or pots that are disconnected and provides length, volume, branching frequency, among other features, with the ability to bin measurements based on diameter thresholds. The “Whole Root” mode extracts additional root system architecture features of more intact root systems, especially excavated root crowns or rhizoboxes, such as the convex hull, angles, and holes. The software supports multiple regions of interest, batch mode, and user-defined export of processed images with overlaid features for use in reports.
 
 #### Downloading
 The software binary can be downloaded [here](https://doi.org/10.5281/zenodo.3747697).
 
-The source code repository is located [here](https://github.com/noble-research-institute/RhizoVisionExplorer).
+The source code repository is located [here](https://github.com/rootphenomicslab/RhizoVisionExplorer).
 
 #### Running the Program
 
