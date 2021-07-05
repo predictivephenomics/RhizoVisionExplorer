@@ -1,3 +1,10 @@
+version 2.0.3
+-------------
+Source code updated to reflect transfer of copyright from Noble Research
+Institute, LLC to Anand Seethepalli and Larry York.
+
+Updated license to GNU GPL version 3.
+
 version 2.0.2
 -------------
 New features:

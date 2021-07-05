@@ -1,26 +1,28 @@
-/*  Copyright (C) 2018-2020 Noble Research Institute, LLC
+/*
+Copyright (C) 2021, Anand Seethepalli and Larry York
+Copyright (C) 2020, Courtesy of Noble Research Institute, LLC
 
 File: MainUI.cpp
 
-Author: Anand Seethepalli (aseethepalli@noble.org)
-Assistant Professor: Larry York (lmyork@noble.org)
-Root Phenomics Lab
-Noble Research Institute, LLC
+Authors:
+Anand Seethepalli (anand.seethepalli@yahoo.co.in)
+Larry York (larry.york@gmail.com)
 
 This file is part of RhizoVision Explorer.
 
-RhizoVision Explorer is free software. You can redistribute it
-and/or modify it as permissible under the terms of the Noble
-General Public License as published by the Noble Research
-Institute, LLC. This license is available at the following link.
+RhizoVision Explorer is free software: you can redistribute
+it and/or modify it under the terms of the GNU General Public
+License as published by the Free Software Foundation, either
+version 3 of the License, or (at your option) any later version.
 
-RhizoVision Explorer is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied
-warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the Noble General Public License for more details.
+RhizoVision Explorer is distributed in the hope that it will
+be useful, but WITHOUT ANY WARRANTY; without even the implied
+warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.  See the GNU General Public License for more details.
 
-You should have received a copy of the Noble General Public License
-along with RhizoVision Explorer.  If not, see <https://github.com/noble-research-institute/RhizoVisionExplorer/blob/master/LICENSE>.
+You should have received a copy of the GNU General Public
+License along with RhizoVision Explorer; see the file COPYING.
+If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include "MainUI.h"
@@ -508,78 +510,6 @@ void MainUI::connectSignalstoSlots()
     });
 }
 
-//void MainUI::about()
-//{
-//    QDialog *about = new QDialog(this);
-//    about->setWindowFlags(about->windowFlags() & ~Qt::WindowContextHelpButtonHint);
-//    about->setWindowIcon(QIcon(":/icons/rvanalyzernew"));
-//    about->setWindowTitle(tr("About RhizoVision Analyzer"));
-//
-//    QVBoxLayout *vl = new QVBoxLayout();
-//    QHBoxLayout *layout = new QHBoxLayout();
-//
-//    QLabel *lb = new QLabel();
-//    lb->setPixmap(QPixmap(":/icons/rvanalyzernew"));
-//    lb->setMaximumWidth(100);
-//    lb->setMaximumHeight(100);
-//    lb->setScaledContents(true);
-//
-//    layout->addWidget(lb, 0);
-//
-//    QTextBrowser  *tlb = new QTextBrowser();
-//    tlb->setHtml(tr(
-//    "<b>RhizoVision Analyzer</b> (version " RHIZOVISION_ANALYZER_VERSION ")<br/>"
-//    "<b>Copyright (C) 2018-2019 Noble Research Institute, LLC</b><br/><br/>"
-//
-//    "This program extracts phenotypic traits from plant root images by "
-//    "performing image processing operations. This program can optionally "
-//    "save the processed and thresholded images. Also, it can optionally "
-//    "convert the extracted traits to physical units.<br/><br/>"
-//    
-//    "RhizoVision Analyzer is free software: you can redistribute it and/or modify "
-//    "it under the terms of the GNU General Public License as published by "
-//    "the Free Software Foundation, either version 3 of the License, or "
-//    "(at your option) any later version.<br/><br/>"
-//    "RhizoVision Analyzer is distributed in the hope that it will be useful, "
-//    "but WITHOUT ANY WARRANTY; without even the implied warranty of "
-//    "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the "
-//    "GNU General Public License for more details.<br/><br/>"
-//    "You should have received a copy of the GNU General Public License "
-//    R"(along with RhizoVision Analyzer.  If not, see <a href = "https://www.gnu.org/licenses/">https://www.gnu.org/licenses/.</a><br/><br/>)"
-//    
-//    "Please send any comments/suggestions/improvements for the program to the authors:<br/>"
-//    "<pre>Anand Seethepalli,<br/>"
-//    "Computer Vision Specialist,<br/>"
-//    "Root Phenomics Lab,<br/>"
-//    "Noble Research Institute, LLC<br/><br/>"
-//    "email: <br/>aseethepalli@noble.org<br/>"
-//    "anand_seethepalli@yahoo.co.in<br/><br/>"
-//    "Larry York,<br/>"
-//    "Principal Investigator<br/>"
-//    "Root Phenomics Lab,<br/>"
-//    "Noble Research Institute, LLC<br/><br/>"
-//    "email: <br/>lmyork@noble.org<br/><br/></pre>"
-//    ));
-//    tlb->setReadOnly(true);
-//    tlb->setOpenExternalLinks(true);
-//    layout->addWidget(tlb, 0);
-//
-//    vl->addLayout(layout);
-//
-//    QPushButton *btn = new QPushButton("Ok");
-//    connect(btn, &QPushButton::clicked, about, &QDialog::close);
-//
-//    vl->addWidget(btn, 0, Qt::AlignRight);
-//    about->setLayout(vl);
-//    about->layout()->setSizeConstraint(QLayout::SetFixedSize);
-//
-//    about->open();
-//
-//    about->exec();
-//
-//    about->deleteLater();
-//}
-
 void MainUI::setprocessfunction(processfunc pfunc)
 {
     //workthread->setprocessfunction(pfunc);
@@ -600,33 +530,35 @@ void MainUI::setHostWindow(cvutil::cvutilWindow *wnd)
     hostWindow->addToolBar(tbar);
 
     hostWindow->setAboutText(
-            "<b>RhizoVision Explorer</b> (version " RHIZOVISION_EXPLORER_VERSION ")<br/>"
-            "<b>Copyright 2018-2020 Noble Research Institute, LLC All Rights Reserved</b><br/><br/>"
-        
-            "This program extracts phenotypic traits from plant root images acquired "
-            "from flatbed scanners or digital cameras by performing image processing "
-            "operations. Additionally, the program can output segmented images or feature "
-            "images overlaid with trait descriptors. All operations may be performed in "
-            "batch mode on directories of images once the user has selected appropriate "
-            "analysis options. <br/><br/>"
-            
-            "RhizoVision Explorer is free software. You can redistribute it and/or modify "
-            "it as permissible under the terms of the Noble General Public License as "
-            "published by the Noble Research Institute, LLC. This license is available at "
-            R"(the following <a href = "https://raw.githubusercontent.com/noble-research-institute/RhizoVisionExplorer/master/LICENSE">link.</a><br/><br/>)"
-            
-            "Please send any comments/suggestions/improvements for the program to the authors:<br/>"
-            "<pre>Anand Seethepalli<br/>"
-            "Computer Vision Analyst<br/>"
-            "Root Phenomics Lab<br/>"
-            "Noble Research Institute, LLC<br/><br/>"
-            "email: <br/>aseethepalli@noble.org<br/>"
-            "anand_seethepalli@yahoo.co.in<br/><br/>"
-            "Larry York<br/>"
-            "Assistant Professor<br/>"
-            "Root Phenomics Lab<br/>"
-            "Noble Research Institute, LLC<br/><br/>"
-            "email: <br/>lmyork@noble.org<br/><br/></pre>",
+        "<b>RhizoVision Explorer</b> (version " RHIZOVISION_EXPLORER_VERSION ")<br/>"
+        "<b>Copyright (C) 2021, Anand Seethepalli and Larry York<br/>"
+        "Copyright(C) 2020, Courtesy of Noble Research Institute, LLC</b><br/><br/>"
+
+        "This program extracts phenotypic traits from plant root images acquired "
+        "from flatbed scanners or digital cameras by performing image processing "
+        "operations. Additionally, the program can output segmented images or feature "
+        "images overlaid with trait descriptors. All operations may be performed in "
+        "batch mode on directories of images once the user has selected appropriate "
+        "analysis options. <br/><br/>"
+
+        "RhizoVision Explorer is free software: you can redistribute it and/or modify "
+        "it under the terms of the GNU General Public License as published by the Free "
+        "Software Foundation, either version 3 of the License, or (at your option) any "
+        "later version. <br/><br/>"
+
+        "RhizoVision Explorer is distributed in the hope that it will be useful, "
+        "but WITHOUT ANY WARRANTY; without even the implied warranty of "
+        "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General "
+        "Public License for more details. <br/><br/>"
+
+        "You should have received a copy of the GNU General Public License along "
+        R"(with RhizoVision Explorer; see the file COPYING.  If not, see <a href = "https://www.gnu.org/licenses/">https://www.gnu.org/licenses/</a>.<br/><br/>)"
+
+        "Please send any comments/suggestions/improvements for the program to the authors:<br/>"
+        "<pre>Anand Seethepalli<br/>"
+        "email: <br/>anand_seethepalli@yahoo.co.in<br/><br/>"
+        "Larry York<br/>"
+        "email: <br/>larry.york@gmail.com<br/><br/></pre>",
         QPixmap(":/icons/RVElogoclearback.png"), QIcon(":/icons/RVElogoclearback.png"));
 }
 

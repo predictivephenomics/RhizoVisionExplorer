@@ -7,7 +7,6 @@
     Add this file to the project for maintenance. -->
 <RCC version="1.0">
   <qresource>
-      <file>icons/noble-logo-color.png</file>
       <file>icons/rveicon.ico</file>
       <file>icons/RVElogoclearback-150.png</file>
       <file>icons/RVElogoclearback.png</file>

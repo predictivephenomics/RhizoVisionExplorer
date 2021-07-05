@@ -1,26 +1,28 @@
-/*  Copyright (C) 2018-2020 Noble Research Institute, LLC
+/*
+Copyright (C) 2021, Anand Seethepalli and Larry York
+Copyright (C) 2020, Courtesy of Noble Research Institute, LLC
 
 File: main.cpp
 
-Author: Anand Seethepalli (aseethepalli@noble.org)
-Assistant Professor: Larry York (lmyork@noble.org)
-Root Phenomics Lab
-Noble Research Institute, LLC
+Authors:
+Anand Seethepalli (anand.seethepalli@yahoo.co.in)
+Larry York (larry.york@gmail.com)
 
 This file is part of RhizoVision Explorer.
 
-RhizoVision Explorer is free software. You can redistribute it
-and/or modify it as permissible under the terms of the Noble
-General Public License as published by the Noble Research
-Institute, LLC. This license is available at the following link.
+RhizoVision Explorer is free software: you can redistribute
+it and/or modify it under the terms of the GNU General Public
+License as published by the Free Software Foundation, either
+version 3 of the License, or (at your option) any later version.
 
-RhizoVision Explorer is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied
-warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the Noble General Public License for more details.
+RhizoVision Explorer is distributed in the hope that it will
+be useful, but WITHOUT ANY WARRANTY; without even the implied
+warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.  See the GNU General Public License for more details.
 
-You should have received a copy of the Noble General Public License
-along with RhizoVision Explorer.  If not, see <https://github.com/noble-research-institute/RhizoVisionExplorer/blob/master/LICENSE>.
+You should have received a copy of the GNU General Public
+License along with RhizoVision Explorer; see the file COPYING.
+If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include <cvutil.h>
@@ -1527,8 +1529,6 @@ int main(int argc, char *argv[])
     //QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QCoreApplication *app = QApplication::instance();
-    app->setOrganizationName("Noble Research Institute");
-    app->setOrganizationDomain("www.noble.org");
     app->setApplicationName("RhizoVision Explorer");
 
     Ptr<cvutilWindow> wnd = getImageProcessorWindow(QIcon(":/icons/RVElogoclearback.png"));
@@ -1537,7 +1537,7 @@ int main(int argc, char *argv[])
     wnd->enableActions(true);
     wnd->setVisibleActions(true);
     wnd->setInitialBanner(QPixmap(":/icons/RVElogoclearback.png").scaledToHeight(200, Qt::SmoothTransformation),
-        QPixmap(":/icons/noble-logo-color.png").scaledToHeight(75, Qt::SmoothTransformation),
+        QPixmap(), //QPixmap(":/icons/noble-logo-color.png").scaledToHeight(75, Qt::SmoothTransformation),
         "RhizoVision Explorer",
         "Load a plant root image from File menu\n             or drag and drop it here.");
     MainUI *dialog = new MainUI();
