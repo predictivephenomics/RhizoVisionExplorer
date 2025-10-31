@@ -990,6 +990,11 @@ void getroottopology(Mat &_skeleton, Mat dist,
             }
         }
     }
+
+    if (segment != nullptr) {
+        delete segment;
+        segment = nullptr;
+    }
     
     //window("new1", skeleton.rowRange(3729 - 50, 3729 + 50).colRange(3400 - 50, 3400 + 50));
 
