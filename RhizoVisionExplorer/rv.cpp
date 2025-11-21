@@ -127,6 +127,7 @@ static void append_checked_positive_ascending(double v, std::vector<double> &out
             "Values for --dranges must be ascending. Got " +
             std::to_string(v) + " after " + std::to_string(out.back()));
     }
+    out.push_back(v);
 }
 
 // Returns true if token was a drange token (consumed); false means “not a drange token, stop.”
