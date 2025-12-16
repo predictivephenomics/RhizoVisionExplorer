@@ -1,4 +1,13 @@
-# ![RhiZoVision Explorer Logo](./RVElogoclearback-80.png) RhizoVision Explorer
+# Information about this fork
+
+Modified source code to remove dependencies on Qt6. Needs an appropriate
+[cvutil](https://github.com/sotlampr/cvutil).
+
+TODO:
+- Better replace Q* clases with std equivalents
+- Use RoiManager (uses QtGraphicsRectItem for calculations)
+
+## ![RhiZoVision Explorer Logo](./RVElogoclearback-80.png) RhizoVision Explorer
 
 RhizoVision Explorer is free and open-source software developed for estimating root traits from images acquired from a flatbed scanner or camera. Root images are expected to have a high contrast of roots with the background, homogenous lighting, and minimal overlapping of roots. The software is built in C++ for speed and stability, using QT for the graphical user interface and OpenCV for image processing. Traits extracted by RhizoVision Explorer have been extensively validated using a physical copper wire ground truth image set, thousands of simulated roots, and comparisons with other image analysis software. The default “Broken Roots” mode is meant for roots washed out from soil cores or pots that are disconnected and provides length, volume, branching frequency, among other features, with the ability to bin measurements based on diameter thresholds. The “Whole Root” mode extracts additional root system architecture features of more intact root systems, especially excavated root crowns or rhizoboxes, such as the convex hull, angles, and holes. The software supports multiple regions of interest, batch mode, and user-defined export of processed images with overlaid features for use in reports.
 

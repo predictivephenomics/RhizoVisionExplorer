@@ -44,7 +44,11 @@ If not, see <https://www.gnu.org/licenses/>.
 //using namespace cv;
 using namespace std;
 
+#ifdef BUILD_GUI
 #include "MainUI.h"
+#else
+#include "feature_config.h"
+#endif
 
 void feature_extractor(feature_config *config);
 

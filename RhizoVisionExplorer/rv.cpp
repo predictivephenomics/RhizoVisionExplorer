@@ -42,7 +42,19 @@ If not, see <https://www.gnu.org/licenses/>.
 #include <cstring>
 #include <regex>
 
+#ifdef BUILD_GUI
+// Not yet supported as RoiManager depends on QGraphicsRectItem
 #include <RoiManager.h>
+#define TO_STD_STRING(x) (x).toStdString()
+#define FROM_STD_STRING(x) QString::fromStdString(x)
+#else
+#include <iomanip>
+typedef std::ofstream QTextStream;
+typedef std::vector<std::string> QStringList;
+#define TO_STD_STRING(x) x
+#define FROM_STD_STRING(x) x
+#define qSetRealNumberPrecision(x) std::setprecision(x)
+#endif
 
 #include "indicators/indicators.hpp"
 
@@ -127,6 +139,7 @@ static void append_checked_positive_ascending(double v, std::vector<double> &out
             "Values for --dranges must be ascending. Got " +
             std::to_string(v) + " after " + std::to_string(out.back()));
     }
+    out.push_back(v);
 }
 
 // Returns true if token was a drange token (consumed); false means “not a drange token, stop.”
@@ -248,6 +261,7 @@ feature_config parseCommandLine(int argc, char* argv[])
                 config.showHelp = true;
             }
         }
+#ifdef BUILD_GUI
         else if (arg == "--roipath")
         {
             if (i + 1 < argc)
@@ -268,7 +282,7 @@ feature_config parseCommandLine(int argc, char* argv[])
                 }
 
                 RoiManager* mgr = RoiManager::GetInstance();
-                mgr->loadAnnotation(QString::fromStdString(roipath));
+                mgr->loadAnnotation(FROM_STD_STRING(roipath));
             }
             else
             {
@@ -276,6 +290,7 @@ feature_config parseCommandLine(int argc, char* argv[])
                 config.showHelp = true;
             }
         }
+#endif
         else if (arg == "--metafile")
         {
             if (i + 1 < argc)
@@ -715,7 +730,9 @@ void printUsage(const char* programName)
     std::cout << "RhizoVision Command Line Interface\n\n";
     std::cout << "Usage: " << programName << " [OPTIONS] <input_path>\n\n";
     std::cout << "Arguments:\n";
+#ifdef BUILD_GUI
     std::cout << "  --roipath PATH              Path to CSV file containing ROI annotations (optional)\n";
+#endif
     std::cout << "  --metafile FILE             Path to metadata CSV file (optional)\n"; // FIXME: Not implemented yet
     std::cout << "  input_path                  Path to image file or directory containing images\n\n";
     
@@ -837,6 +854,7 @@ bool analyzeImage(feature_config* config)
         
         // Set image name for reporting
         config->imagefilename = fs::path(config->inputPath).filename().string();
+#ifdef BUILD_GUI
         // Get ROI info
         RoiManager* mgr = RoiManager::GetInstance();
         int roicount = mgr->getROICount();
@@ -902,6 +920,7 @@ bool analyzeImage(feature_config* config)
             config->processed = outputs;
         }
         else
+#endif
         {
             // Call the feature extraction function
             config->input = input;
@@ -912,7 +931,7 @@ bool analyzeImage(feature_config* config)
         // Save segmented image if requested
         if (config->savesegmented && !config->seg.empty())
         {
-            std::string savefile = (fs::path(config->inputPath).stem().string() + config->segsuffix.toStdString() + ".png");
+            std::string savefile = (fs::path(config->inputPath).stem().string() + TO_STD_STRING(config->segsuffix) + ".png");
             std::string segFilename = (fs::path(config->outputPath) / savefile).string();
             cv::imwrite(segFilename, config->seg);
             if (config->verbose)
@@ -922,7 +941,7 @@ bool analyzeImage(feature_config* config)
         // Save processed image if requested
         if (config->saveprocessed && !config->processed.empty())
         {
-            std::string savefile = (fs::path(config->inputPath).stem().string() + config->prosuffix.toStdString() + ".png");
+            std::string savefile = (fs::path(config->inputPath).stem().string() + TO_STD_STRING(config->prosuffix) + ".png");
             std::string proFilename = (fs::path(config->outputPath) / savefile).string();
             cv::imwrite(proFilename, config->processed);
             if (config->verbose)
@@ -998,20 +1017,24 @@ void writeResultsToCsv(feature_config &config,
     if (!config.noappend && fileExists && config.verbose)
         std::cerr << "Warning: Output file " << csvFullPath << " already exists. Appending results." << std::endl;
     
+#ifdef BUILD_GUI
     QFile outf(csvFullPath);
     if (!outf.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append))
     {
         std::cerr << "Error: Could not open output file " << csvFullPath << std::endl;
         return;
     }
-    
     QTextStream f(&outf);
+#else
+    std::ofstream f;
+    f.open(csvFullPath, std::ios::binary | std::ios::app);
+#endif
     if (!fileExists || config.noappend)
         writeCsvHeader(config, f);
     for (size_t i = 0; i < imageFiles.size(); ++i)
     {
         const auto &features = allFeatures[i];
-        const QString filename = QString::fromStdString(fs::path(imageFiles[i].toStdString()).filename().string());
+        const QString filename = FROM_STD_STRING(fs::path(TO_STD_STRING(imageFiles[i])).filename().string());
         const QString roiname = roiNames[i];
 
         f << filename << "," << roiname;
@@ -1027,8 +1050,11 @@ void writeResultsToCsv(feature_config &config,
 
         f << "\n";
     }
-    
+#ifdef BUILD_GUI    
     outf.close();
+#else
+    f.close();
+#endif
 }
 
 std::tuple<int, int, int> getEstimatedTimeRemaining(int currentImageIndex, int totalImages, double elapsedTime)
@@ -1134,8 +1160,10 @@ int main(int argc, char *argv[])
     
     config.consolemode = true;
     
+#ifdef BUILD_GUI
     RoiManager *mgr = RoiManager::GetInstance();
     int roicount = mgr->getROICount();
+#endif
     
     // Set time start for processing
     auto start = std::chrono::steady_clock::now();
@@ -1182,20 +1210,22 @@ int main(int argc, char *argv[])
 
         if (analyzeImage(&config))
         {
+#ifdef BUILD_GUI
             if (roicount > 0)
             {
                 for (int r = 0; r < roicount; r++)
                 {
                     std::string roiName = mgr->getROIName(r);
                     allFeatures.push_back(config.roifeatures[r]);
-                    processedFiles.push_back(QString::fromStdString(imageFiles[i]));
-                    roinames.push_back(QString::fromStdString(roiName));
+                    processedFiles.push_back(FROM_STD_STRING(imageFiles[i]));
+                    roinames.push_back(FROM_STD_STRING(roiName));
                 }
             }
             else
+#endif
             {
                 allFeatures.push_back(config.features);
-                processedFiles.push_back(QString::fromStdString(imageFiles[i]));
+                processedFiles.push_back(FROM_STD_STRING(imageFiles[i]));
                 roinames.push_back("Full");
             }
         }

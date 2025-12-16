@@ -155,10 +155,17 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     # Install the RhizoVisionExplorer executable
-    install(TARGETS RhizoVisionExplorer rv
-        CONFIGURATIONS Debug Release
-        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    )
+    if(Qt6_FOUND)
+        install(TARGETS RhizoVisionExplorer rv
+            CONFIGURATIONS Debug Release
+            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        )
+    else()
+        install(TARGETS rv
+            CONFIGURATIONS Debug Release
+            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        )
+    endif()
 
     # Install additional files.
     install(FILES README.md COPYING CONFIGURATIONS Debug Release DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/RhizoVisionExplorer)

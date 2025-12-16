@@ -34,7 +34,12 @@ If not, see <https://www.gnu.org/licenses/>.
 #include <opencv2/opencv.hpp>
 #include <vector>
 
+#ifdef BUILD_GUI
 #include <QtCore/QString>
+#else
+#include <string>
+typedef std::string QString;
+#endif
 
 #define RHIZOVISION_EXPLORER_VERSION "2.5.0 Beta"
 

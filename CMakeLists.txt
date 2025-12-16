@@ -89,14 +89,22 @@ endif()
 find_package(OpenCV REQUIRED)
 
 # Find Qt6
-find_package(Qt6 REQUIRED COMPONENTS Core Widgets Charts Gui OpenGL)
-qt_standard_project_setup()
+find_package(Qt6 COMPONENTS Core Widgets Charts Gui OpenGL)
+
+if(Qt6_found)
+    qt_standard_project_setup()
+    add_compile_definitions(BUILD_GUI)
+else()
+    message(WARNING "qt6 not found, building without GUI support.")
+endif()
 
 # Find cvutil
 find_package(cvutil REQUIRED)
 
-if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    find_package(X11 REQUIRED)
+if(Qt6_FOUND)
+    if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+        find_package(X11 REQUIRED)
+    endif()
 endif()
 
 get_cmake_property(_variableNames VARIABLES)
@@ -116,7 +124,6 @@ set(CMAKE_AUTOUIC ON)    # Enable automatic UIC
 
 # Define the source files for RoiManager
 set(SOURCES
-    RhizoVisionExplorer/MainUI.cpp
     RhizoVisionExplorer/feature_extraction.cpp
     RhizoVisionExplorer/rootsegmentprop.cpp
     RhizoVisionExplorer/roottopology.cpp
@@ -128,8 +135,6 @@ set(HEADERS
     RhizoVisionExplorer/feature_extraction.h
     RhizoVisionExplorer/feature_config.h
     RhizoVisionExplorer/common_types.h
-    RhizoVisionExplorer/demo.h
-    RhizoVisionExplorer/MainUI.h
     RhizoVisionExplorer/resource.h
     RhizoVisionExplorer/rootsegmentprop.h
     RhizoVisionExplorer/roottopology.h
@@ -140,29 +145,50 @@ if(WIN32)
     list(APPEND SOURCES RhizoVisionExplorer/RhizoVisionExplorer.rc)
 endif()
 
-# Define the target as an executable.
-add_executable(RhizoVisionExplorer WIN32 
-    RhizoVisionExplorer/main.cpp
-    ${SOURCES}
-    ${HEADERS})
-add_executable(rv 
+if(Qt6_found)
+    list(APPEND SOURCES RhizoVisionExplorer/MainUI.cpp)
+    list(APPEND HEADERS RhizoVisionExplorer/demo.h RhizoVisionExplorer/MainUI.h)
+endif()
+
+if(Qt6_found)
+    # Define the target as an executable.
+    add_executable(RhizoVisionExplorer WIN32
+        RhizoVisionExplorer/main.cpp
+        ${SOURCES}
+        ${HEADERS})
+    set_target_properties(RhizoVisionExplorer PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
+    # Add the generated resource .cpp file to the target
+    target_sources(RhizoVisionExplorer PRIVATE ${RESOURCES})
+
+    # Include directories (Qt and OpenCV paths are already handled at the solution level)
+    target_include_directories(RhizoVisionExplorer
+        PRIVATE
+            #${CMAKE_BINARY_DIR}/library/include
+            ${OpenCV_INCLUDE_DIRS}
+    )
+    # Link libraries (cvutil depends on PluginManager and RoiManager)
+    target_link_libraries(RhizoVisionExplorer
+        PRIVATE
+            ${OpenCV_LIBS}
+            Qt6::Core
+            Qt6::Widgets
+            Qt6::Charts
+            Qt6::Gui
+            Qt6::OpenGL
+            cvutil::cvutil
+            cvutil::PluginManager
+            cvutil::RoiManager
+    )
+endif()
+
+add_executable(rv
     RhizoVisionExplorer/rv.cpp
     RhizoVisionExplorer/indicators/indicators.hpp
     ${SOURCES}
     ${HEADERS})
 
-set_target_properties(RhizoVisionExplorer PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
+
 set_target_properties(rv PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
-
-# Add the generated resource .cpp file to the target
-target_sources(RhizoVisionExplorer PRIVATE ${RESOURCES})
-
-# Include directories (Qt and OpenCV paths are already handled at the solution level)
-target_include_directories(RhizoVisionExplorer
-    PRIVATE
-        #${CMAKE_BINARY_DIR}/library/include
-        ${OpenCV_INCLUDE_DIRS}
-)
 
 target_include_directories(rv
     PRIVATE
@@ -170,31 +196,10 @@ target_include_directories(rv
         ${OpenCV_INCLUDE_DIRS}
 )
 
-# Link libraries (cvutil depends on PluginManager and RoiManager)
-target_link_libraries(RhizoVisionExplorer
-    PRIVATE
-        ${OpenCV_LIBS}
-        Qt6::Core
-        Qt6::Widgets
-        Qt6::Charts
-        Qt6::Gui
-        Qt6::OpenGL
-        cvutil::cvutil
-        cvutil::PluginManager
-        cvutil::RoiManager
-)
-
 target_link_libraries(rv
     PRIVATE
         ${OpenCV_LIBS}
-        Qt6::Core
-        Qt6::Widgets
-        Qt6::Charts
-        Qt6::Gui
-        Qt6::OpenGL
         cvutil::cvutil
-        cvutil::PluginManager
-        cvutil::RoiManager
 )
 
 set(CPACK_PROPERTIES_FILE "${CMAKE_BINARY_DIR}/RhizoVisionCPackProperties-$<CONFIG>.cmake")

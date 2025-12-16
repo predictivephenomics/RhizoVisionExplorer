@@ -868,8 +868,10 @@ static bool checkProgress(feature_config *config, QString str)
     {
         if (!config->consolemode)
         {
+#ifdef BUILD_GUI
             config->ui->updateProgress(str);
             QApplication::processEvents();
+#endif
             return config->abortprocess;
         }
         // else

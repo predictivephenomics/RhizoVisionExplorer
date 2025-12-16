@@ -97,9 +97,12 @@ void getrootlength_new(Mat skeleton, ListofListsRef<Point> segments, PointList o
     for (int i = 0; i < segsize; i++)
     {
         simplified = doughlas_peucker(segments[i], 0.71, false); // We took the 0.71 as threshold to make sure we identify straight lines.
-        segmentsize = simplified.size() - 1;
+        segmentsize = simplified.size();
 
-        for (int j = 0; j < segmentsize; j++)
+        if (segmentsize == 0)
+            continue;
+
+        for (int j = 0; j < segmentsize-1; j++)
         {
             diff = simplified[j] - simplified[j + 1];
             rootlen += norm(diff);
