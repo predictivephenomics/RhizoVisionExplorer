@@ -39,3 +39,10 @@
 CMakePresets.json
 CMakeUserPresets.json
 
+# Exclude build directories
+build/
+cmake-build-*/
+
+# Exclude CodeGraph index
+.codegraph/
+
