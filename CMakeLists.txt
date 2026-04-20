@@ -30,8 +30,10 @@ option(ENABLE_AVX2_FMA "Enable AVX2 and FMA support" ON) # Default support for x
 # Detect the OS
 if(WIN32)
     message(STATUS "Configuring for Windows")
+elseif(APPLE)
+    message(STATUS "Configuring for macOS")
 elseif(UNIX)
-    message(STATUS "Configuring for Unix/Linux")
+    message(STATUS "Configuring for Linux")
 else()
     message(FATAL_ERROR "Unsupported OS")
 endif()
@@ -58,15 +60,19 @@ if(MSVC)
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG -D_DEBUG -O0")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -DNDEBUG")
-    
-    # Enable AVX-512 and AVX2/FMA support
-    if(ENABLE_AVX512)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx512")
+
+    # Enable AVX-512 and AVX2/FMA support (only for x86_64, not ARM)
+    if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|AMD64")
+        if(ENABLE_AVX512)
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx512")
+        endif()
+        if(ENABLE_AVX2_FMA)
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx2 -mfma")
+        endif()
+    elseif(APPLE AND CMAKE_SYSTEM_PROCESSOR MATCHES "arm64")
+        message(STATUS "Building for Apple Silicon (ARM64) - AVX instructions not available")
     endif()
-    if(ENABLE_AVX2_FMA)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx2 -mfma")
-    endif()
-    
+
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-fast-math -frounding-math")
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG -D_DEBUG -O0")
@@ -141,11 +147,24 @@ if(WIN32)
 endif()
 
 # Define the target as an executable.
-add_executable(RhizoVisionExplorer WIN32 
-    RhizoVisionExplorer/main.cpp
-    ${SOURCES}
-    ${HEADERS})
-add_executable(rv 
+if(APPLE)
+    add_executable(RhizoVisionExplorer MACOSX_BUNDLE
+        RhizoVisionExplorer/main.cpp
+        ${SOURCES}
+        ${HEADERS})
+elseif(WIN32)
+    add_executable(RhizoVisionExplorer WIN32
+        RhizoVisionExplorer/main.cpp
+        ${SOURCES}
+        ${HEADERS})
+else()
+    add_executable(RhizoVisionExplorer
+        RhizoVisionExplorer/main.cpp
+        ${SOURCES}
+        ${HEADERS})
+endif()
+
+add_executable(rv
     RhizoVisionExplorer/rv.cpp
     RhizoVisionExplorer/indicators/indicators.hpp
     ${SOURCES}
@@ -153,6 +172,19 @@ add_executable(rv
 
 set_target_properties(RhizoVisionExplorer PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
 set_target_properties(rv PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
+
+# macOS-specific bundle properties
+if(APPLE)
+    set_target_properties(RhizoVisionExplorer PROPERTIES
+        MACOSX_BUNDLE_BUNDLE_NAME "RhizoVision Explorer"
+        MACOSX_BUNDLE_GUI_IDENTIFIER "org.rootphenomicslab.rhizovisionexplorer"
+        MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
+        MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION}
+        MACOSX_BUNDLE_INFO_STRING "RhizoVision Explorer - Root image analysis software"
+        MACOSX_BUNDLE_LONG_VERSION_STRING ${PROJECT_VERSION}
+        MACOSX_BUNDLE_COPYRIGHT "Copyright (C) 2025 Oak Ridge National Laboratory"
+    )
+endif()
 
 # Add the generated resource .cpp file to the target
 target_sources(RhizoVisionExplorer PRIVATE ${RESOURCES})
@@ -207,7 +239,19 @@ include(CMake/cvutilInstallTargets.cmake)
 # Include the CPack module
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     include(CMake/PackageWindows.cmake)
-else(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    message(STATUS "macOS packaging configuration")
+    if(EXISTS "${CMAKE_SOURCE_DIR}/CMake/PackageMacOS.cmake")
+        include(CMake/PackageMacOS.cmake)
+    else()
+        message(STATUS "PackageMacOS.cmake not found, using basic CPack configuration")
+        set(CPACK_GENERATOR "DragNDrop")
+        set(CPACK_DMG_VOLUME_NAME "RhizoVision Explorer")
+        set(CPACK_DMG_FORMAT "UDZO")
+        set(CPACK_PACKAGE_FILE_NAME "RhizoVisionExplorer-${PROJECT_VERSION}-macOS")
+        include(CPack)
+    endif()
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     # Check if we are using a conda env or not
     if (DEFINED ENV{CONDA_PREFIX})
         message(STATUS "Using conda environment: $ENV{CONDA_PREFIX} not generating a Debian package.")
