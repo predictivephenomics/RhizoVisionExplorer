@@ -39,3 +39,5 @@
 CMakePresets.json
 CMakeUserPresets.json
 
+.DS_Store
+/build

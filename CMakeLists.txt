@@ -27,6 +27,18 @@ endif()
 option(ENABLE_AVX512 "Enable AVX-512 support" OFF) # To be enabled on x86_64 server processors
 option(ENABLE_AVX2_FMA "Enable AVX2 and FMA support" ON) # Default support for x86_64 desktop processors
 
+# Disable x86-specific SIMD flags on non-x86 architectures (e.g., Apple Silicon arm64)
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "arm64|aarch64|ARM64")
+    if(ENABLE_AVX512)
+        message(STATUS "Disabling AVX-512: not supported on ${CMAKE_SYSTEM_PROCESSOR}")
+        set(ENABLE_AVX512 OFF CACHE BOOL "Enable AVX-512 support" FORCE)
+    endif()
+    if(ENABLE_AVX2_FMA)
+        message(STATUS "Disabling AVX2/FMA: not supported on ${CMAKE_SYSTEM_PROCESSOR}")
+        set(ENABLE_AVX2_FMA OFF CACHE BOOL "Enable AVX2 and FMA support" FORCE)
+    endif()
+endif()
+
 # Detect the OS
 if(WIN32)
     message(STATUS "Configuring for Windows")
@@ -141,11 +153,12 @@ if(WIN32)
 endif()
 
 # Define the target as an executable.
-add_executable(RhizoVisionExplorer WIN32 
+# WIN32 suppresses the console window on Windows; MACOSX_BUNDLE creates a .app on macOS.
+add_executable(RhizoVisionExplorer WIN32 MACOSX_BUNDLE
     RhizoVisionExplorer/main.cpp
     ${SOURCES}
     ${HEADERS})
-add_executable(rv 
+add_executable(rv
     RhizoVisionExplorer/rv.cpp
     RhizoVisionExplorer/indicators/indicators.hpp
     ${SOURCES}
@@ -153,6 +166,16 @@ add_executable(rv
 
 set_target_properties(RhizoVisionExplorer PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
 set_target_properties(rv PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
+
+if(APPLE)
+    set_target_properties(RhizoVisionExplorer PROPERTIES
+        MACOSX_BUNDLE_BUNDLE_NAME         "RhizoVisionExplorer"
+        MACOSX_BUNDLE_BUNDLE_VERSION      "${PROJECT_VERSION}"
+        MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
+        MACOSX_BUNDLE_GUI_IDENTIFIER      "gov.ornl.RhizoVisionExplorer"
+        MACOSX_BUNDLE_INFO_STRING         "RhizoVision Explorer ${PROJECT_VERSION}"
+    )
+endif()
 
 # Add the generated resource .cpp file to the target
 target_sources(RhizoVisionExplorer PRIVATE ${RESOURCES})
@@ -207,7 +230,7 @@ include(CMake/cvutilInstallTargets.cmake)
 # Include the CPack module
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     include(CMake/PackageWindows.cmake)
-else(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     # Check if we are using a conda env or not
     if (DEFINED ENV{CONDA_PREFIX})
         message(STATUS "Using conda environment: $ENV{CONDA_PREFIX} not generating a Debian package.")
@@ -216,4 +239,6 @@ else(CMAKE_SYSTEM_NAME STREQUAL "Linux")
         message(STATUS "Not using conda environment, use CPack to create a Debian package.")
         include(CMake/PackageLinux.cmake)
     endif()
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    include(CMake/PackageMacOS.cmake)
 endif()
