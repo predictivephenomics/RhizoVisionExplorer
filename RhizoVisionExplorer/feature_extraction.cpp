@@ -41,7 +41,7 @@ static void getMedianMaxRootNumbers(cv::Mat seg, double &medrtno, double &maxrtn
     diff = seg1 - seg2;
 
     diff = (diff > 0) / 255;
-    reduce(diff, m, 1, CV_REDUCE_SUM, CV_MAKE_TYPE(CV_MAT_DEPTH(CV_64F), diff.channels()));
+    reduce(diff, m, 1, cv::REDUCE_SUM, CV_MAKE_TYPE(CV_MAT_DEPTH(CV_64F), diff.channels()));
 
     std::sort(m.ptr<double>(), m.ptr<double>() + m.rows);
     // cv::sort(m, m2, cv::SortFlags::SORT_DESCENDING);
@@ -1148,7 +1148,7 @@ void feature_extractor(feature_config *config)
     if (checkProgress(config, "Finding the contours ..."))
         return;
 
-    findContours(lsim.clone(), contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE);
+    findContours(lsim.clone(), contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
 
     // Convex hull is determined only for whole roots.
     if (config->roottype == 0)

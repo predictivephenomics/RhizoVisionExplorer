@@ -717,7 +717,7 @@ void getroottopology(Mat &_skeleton, Mat dist,
     int *skco = sklabels.ptr<int>();
     int ncols = skeleton.cols;
 
-    findContours(skeleton.clone(), contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
+    findContours(skeleton.clone(), contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
     modifycontours(skeleton, contours);
 
     branch.resize(skncomp);
@@ -1369,7 +1369,7 @@ Mat drawtopology2(Mat segmented, Scalar_<int> ranges, Mat _skeleton, PointList b
     vconcat(Mat::zeros(1, skeleton2.cols, skeleton2.type()), skeleton2, skeleton2);
     vconcat(skeleton2, Mat::zeros(1, skeleton2.cols, skeleton2.type()), skeleton2);
 
-    findContours(skeleton2.clone(), contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
+    findContours(skeleton2.clone(), contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
     modifycontours(skeleton2, contours);
 
     channels.push_back(skdiff + ((skeleton / 255) * 28));
@@ -1432,7 +1432,7 @@ Mat drawtopology_disconnectedroot(Mat segmented, cv::Mat dist, Scalar_<int> rang
     vconcat(Mat::zeros(1, skeleton2.cols, skeleton2.type()), skeleton2, skeleton2);
     vconcat(skeleton2, Mat::zeros(1, skeleton2.cols, skeleton2.type()), skeleton2);
 
-    findContours(skeleton2.clone(), contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
+    findContours(skeleton2.clone(), contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
     modifycontours(skeleton2, contours);*/
 
     if (!skeleton.empty())
