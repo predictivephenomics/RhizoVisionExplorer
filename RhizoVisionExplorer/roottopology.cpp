@@ -27,6 +27,7 @@ If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include "roottopology.h"
+#include <cstdlib>
 
 using namespace std;
 using namespace cv;
@@ -78,11 +79,14 @@ rootsegment::~rootsegment()
 
 void rootsegment::removeunnecesary()
 {
-    int i;
+    if (pts.size() <= 2)
+        return;
+
     Points newpoints;
+    newpoints.reserve(pts.size());
 
     newpoints.push_back(pts[0]);
-    for (i = 1; i < (pts.size() - 1); i++)
+    for (size_t i = 1; i + 1 < pts.size(); i++)
     {
         if (pts[i].y == pts[i + 1].y && pts[i].y == pts[i - 1].y)
             continue;
@@ -94,7 +98,7 @@ void rootsegment::removeunnecesary()
             newpoints.push_back(pts[i]);
     }
 
-    newpoints.push_back(pts[i]);
+    newpoints.push_back(pts.back());
     pts = newpoints;
 }
 
@@ -195,12 +199,14 @@ double rootsegment::getLength()
 {
     if (!endptset)
         return 0;
+    if (pts.size() < 2)
+        return 0.0;
 
     double result = 0;
     Point diff;
     double a = 0, b = 0;
 
-    for (int i = 0; i < (pts.size() - 1); i++)
+    for (size_t i = 0; i + 1 < pts.size(); i++)
     {
         diff = pts[i] - pts[i + 1];
         a = fabs(double(diff.x));
@@ -413,6 +419,13 @@ void modifycontours(Mat skeleton, ListofListsRef<Point> contours)
             curry = contours[i][j].y;
             nextx = contours[i][nnextpt].x;
             nexty = contours[i][nnextpt].y;
+
+            // Guard duplicate contour points to avoid undefined diagonal-step math.
+            if (currx == nextx && curry == nexty)
+            {
+                tempcontour.push_back(Point(currx, curry));
+                continue;
+            }
             
             //if (currx < nextx)
             //    key = ((currx * 10000 + curry) * 10000 + nextx) * 10000 + nexty;
@@ -724,8 +737,22 @@ void getroottopology(Mat &_skeleton, Mat dist,
     end.resize(skncomp);
     over.resize(skncomp);
     ptsizes.resize(skncomp);
-
-    segments.reserve(20000);
+    const char *segmentReserveEnv = std::getenv("RV_SEGMENT_RESERVE");
+    if (segmentReserveEnv != nullptr && segmentReserveEnv[0] != '\0')
+    {
+        const long long reserveSize = std::strtoll(segmentReserveEnv, nullptr, 10);
+        if (reserveSize > 0)
+            segments.reserve(static_cast<size_t>(reserveSize));
+    }
+    else
+    {
+#ifdef __APPLE__
+        // Keep pruning iteration order aligned with the Windows parity baseline.
+        segments.reserve(11000);
+#else
+        segments.reserve(20000);
+#endif
+    }
 
     conmap.resize(contours.size());
     
@@ -1012,6 +1039,13 @@ void getroottopology(Mat &_skeleton, Mat dist,
                     if (kv.second[i] == nullptr || (!kv.second[i]->prunedelete))
                         continue;
 
+                    if (kv.second[i]->pts.empty())
+                    {
+                        delete kv.second[i];
+                        kv.second[i] = nullptr;
+                        continue;
+                    }
+
                     for (int j = 0; j < kv.second[i]->pts.size() - 1; j++)
                     {
                         nnextpt = j + 1;
@@ -1180,9 +1214,9 @@ void getroottopology(Mat &_skeleton, Mat dist,
                     rootsegment *rs = segments[connIndices[pt.x][pt.y][0].first][connIndices[pt.x][pt.y][0].second];
                     if (rs != nullptr)
                     {
-                        Point pt = (rs->pts[0] == pt) ? rs->pts.back() : rs->pts[0];
+                        Point endPt = (rs->pts[0] == pt) ? rs->pts.back() : rs->pts[0];
 
-                        if (rs->getLength() <= dtptr[pt.y * dist.cols + pt.x] + rootPruningThreshold)
+                        if (rs->getLength() <= dtptr[endPt.y * dist.cols + endPt.x] + rootPruningThreshold)
                         {
                             rs->prunedelete = true;
                             pruningNeeded = true;

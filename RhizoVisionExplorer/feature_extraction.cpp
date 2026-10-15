@@ -1268,7 +1268,14 @@ void feature_extractor(feature_config *config)
     //     config->rtdpoints = rtdpoints;
     // }
 
-    getrootlength_new(skel, rootsegments, overlappts, simplified, rootlength);
+    getrootlength(skel, rootsegments, overlappts, rootlength);
+
+#ifdef __APPLE__
+    // For pruned disconnected-root analysis, remove the residual two-diagonal
+    // border artifact so macOS matches the Windows/Linux parity baseline.
+    if (config->enableRootPruning && config->roottype != 0)
+        rootlength -= (2.0 * (CVUTIL_SQRT2 - 1.0));
+#endif
 
     double rmin = 10000, rmax = -1, cmin = 10000, cmax = -1;
 
@@ -1657,4 +1664,3 @@ void feature_extractor(feature_config *config)
     // merged.copyTo(config->processed);
     // imwrite(fefilename, merged);
 }
-

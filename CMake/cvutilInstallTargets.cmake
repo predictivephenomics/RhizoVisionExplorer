@@ -163,7 +163,7 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     # Install additional files.
     install(FILES README.md COPYING CONFIGURATIONS Debug Release DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/RhizoVisionExplorer)
 
-    install(FILES 
+    install(FILES
         licenses/LICENSE_Qt6
         licenses/LICENSE_opencv.txt
         licenses/LICENSE_FFMPEG.txt
@@ -176,7 +176,7 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
 
     install(FILES manual/RhizoVisionExplorerManualv2.pdf CONFIGURATIONS Debug Release DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/RhizoVisionExplorer/manual)
 
-    install(FILES 
+    install(FILES
         imageexamples/crowns/crown1.png
         imageexamples/crowns/crown2.png
         imageexamples/crowns/crown3.png
@@ -185,12 +185,61 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
         DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/RhizoVisionExplorer/imageexamples/crowns
     )
 
-    install(FILES 
+    install(FILES
         imageexamples/scans/scan1.jpg
         imageexamples/scans/scan2.jpg
         imageexamples/scans/scan3.jpg
         imageexamples/scans/wheatscan_settings.csv
         CONFIGURATIONS Debug Release
         DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/RhizoVisionExplorer/imageexamples/scans
+    )
+
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    # Install the .app bundle and the CLI tool
+    install(TARGETS RhizoVisionExplorer
+        CONFIGURATIONS Debug Release
+        BUNDLE DESTINATION .
+    )
+    install(TARGETS rv
+        CONFIGURATIONS Debug Release
+        RUNTIME DESTINATION .
+    )
+
+    # Resources installed inside the .app bundle
+    set(_bundle_res "RhizoVisionExplorer.app/Contents/Resources")
+
+    install(FILES README.md COPYING
+        CONFIGURATIONS Debug Release
+        DESTINATION "${_bundle_res}"
+    )
+    install(FILES
+        licenses/LICENSE_Qt6
+        licenses/LICENSE_opencv.txt
+        licenses/LICENSE_FFMPEG.txt
+        licenses/LICENSE_cvutil
+        licenses/LICENSE.indicators
+        licenses/LICENSE.termcolor
+        CONFIGURATIONS Debug Release
+        DESTINATION "${_bundle_res}/licenses"
+    )
+    install(FILES manual/RhizoVisionExplorerManualv2.pdf
+        CONFIGURATIONS Debug Release
+        DESTINATION "${_bundle_res}/manual"
+    )
+    install(FILES
+        imageexamples/crowns/crown1.png
+        imageexamples/crowns/crown2.png
+        imageexamples/crowns/crown3.png
+        imageexamples/crowns/wheatcrown_settings.csv
+        CONFIGURATIONS Debug Release
+        DESTINATION "${_bundle_res}/imageexamples/crowns"
+    )
+    install(FILES
+        imageexamples/scans/scan1.jpg
+        imageexamples/scans/scan2.jpg
+        imageexamples/scans/scan3.jpg
+        imageexamples/scans/wheatscan_settings.csv
+        CONFIGURATIONS Debug Release
+        DESTINATION "${_bundle_res}/imageexamples/scans"
     )
 endif()
