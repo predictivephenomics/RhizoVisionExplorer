@@ -15,11 +15,33 @@ The program opens a GUI where we specify the location of root images and output 
 
 #### Pre-requisites for Running the Program
 
-This program needs an x86_64 processor. Any Intel or AMD processor may be used for running the program. If the CPU supports Intel AVX 2.0, the program runs faster for feature extraction.
+The program supports x86_64 processors and Apple Silicon Macs. If an x86_64 CPU supports Intel AVX 2.0, the program runs faster for feature extraction. Apple Silicon builds disable the x86-specific AVX flags.
 
 #### Compiling the Source
 
-The source code is compiled using Microsoft Visual Studio. The program depends on Qt 6.9, OpenCV 4.11 or above and [cvutil](https://github.com/rootphenomicslab/cvutil) 2.5.0 libraries for compiling the source.
+The source code is compiled with CMake 3.28 or newer and a C++17 compiler (Microsoft Visual Studio on Windows, GCC/Clang on Linux, or Apple Clang on macOS). The program depends on Qt 6.9 (including Charts), OpenCV 4.11 or above and [cvutil](https://github.com/rootphenomicslab/cvutil) 2.5.0 libraries for compiling the source.
+
+##### Building on macOS
+
+Install the Xcode Command Line Tools (`xcode-select --install`) and the dependencies above, all built for the same architecture (`arm64` on Apple Silicon or `x86_64` on Intel). From the repository root:
+
+```bash
+# Installation prefix containing Qt, OpenCV, and cvutil.
+export RVE_DEPS_PREFIX="/path/to/dependency/prefix"
+cmake -S . -B build/macos \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_PREFIX_PATH="$RVE_DEPS_PREFIX" \
+  -DCMAKE_INSTALL_PREFIX="$PWD/build/macos-install" \
+  -DENABLE_AVX512=OFF -DENABLE_AVX2_FMA=OFF
+cmake --build build/macos --parallel
+cmake --install build/macos
+codesign --force --deep --sign - build/macos-install/RhizoVisionExplorer.app
+open build/macos-install/RhizoVisionExplorer.app
+```
+
+For a separate cvutil installation, append `;/path/to/cvutil/prefix` to `CMAKE_PREFIX_PATH`. The app and CLI (`rv`) are installed in `build/macos-install`; re-signing is needed after installation changes library paths.
+
+Qt's `macdeployqt` is required for a self-contained app. To create a DMG after building, run `(cd build/macos && cpack -G DragNDrop -C Release)`. Builds use ad-hoc signing and are not notarized.
 
 #### Example Usage from Command Line
 
@@ -56,4 +78,3 @@ seethepallia@ornl.gov
 
 Larry York  
 yorklm@ornl.gov
-

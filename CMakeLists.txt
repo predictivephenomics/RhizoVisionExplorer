@@ -176,7 +176,13 @@ set_target_properties(RhizoVisionExplorer PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG
 set_target_properties(rv PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
 
 if(APPLE)
+    set(RHIZO_MACOS_ICON "${CMAKE_CURRENT_SOURCE_DIR}/RhizoVisionExplorer/icons/rveicon.icns")
+    set_source_files_properties("${RHIZO_MACOS_ICON}" PROPERTIES
+        MACOSX_PACKAGE_LOCATION Resources
+    )
+    target_sources(RhizoVisionExplorer PRIVATE "${RHIZO_MACOS_ICON}")
     set_target_properties(RhizoVisionExplorer PROPERTIES
+        MACOSX_BUNDLE_ICON_FILE           "rveicon.icns"
         MACOSX_BUNDLE_BUNDLE_NAME         "RhizoVisionExplorer"
         MACOSX_BUNDLE_BUNDLE_VERSION      "${PROJECT_VERSION}"
         MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
